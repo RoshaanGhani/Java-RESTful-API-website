@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Rented Movies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        #rentedMovies div {
+            margin: 20px 0;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Rented Movies</h1>
+    <div id="rentedMovies"></div>
+    <script>
+        let userId = sessionStorage.getItem('userId');
+        if (!userId) {
+            alert('You need to log in to view your rented movies');
+            window.location.href = 'login.html';
+        } else {
+            fetch(`/movie-rental-service/api/rentals?userId=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let rentedMoviesDiv = document.getElementById('rentedMovies');
+                    if (data.length === 0) {
+                        rentedMoviesDiv.innerHTML = '<p>No rented movies found.</p>';
+                    } else {
+                        data.forEach(movie => {
+                            let movieElement = document.createElement('div');
+                            movieElement.innerHTML = `<h2>${movie.title}</h2><p>${movie.genre}</p><p>${movie.description}</p>`;
+                            rentedMoviesDiv.appendChild(movieElement);
+                        });
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+        }
+    </script>
+</body>
+</html>
